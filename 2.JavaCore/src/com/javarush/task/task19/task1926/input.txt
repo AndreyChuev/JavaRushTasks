@@ -1,0 +1,24 @@
+StringBuilder append(boolean b)
+Appends the string representation of the boolean argument to the sequence.
+StringBuilder append(char c)
+Appends the string representation of the char argument to this sequence.
+StringBuilder append(char[] str)
+Appends the string representation of the char array argument to this sequence.
+StringBuilder append(char[] str, int offset, int len)
+Appends the string representation of a subarray of the char array argument to this sequence.
+StringBuilder append(CharSequence s)
+Appends the specified character sequence to this Appendable.
+StringBuilder append(CharSequence s, int start, int end)
+Appends a subsequence of the specified CharSequence to this sequence.
+StringBuilder append(double d)
+Appends the string representation of the double argument to this sequence.
+StringBuilder append(float f)
+Appends the string representation of the float argument to this sequence.
+StringBuilder append(int i)
+Appends the string representation of the int argument to this sequence.
+StringBuilder append(long lng)
+Appends the string representation of the long argument to this sequence.
+StringBuilder append(Object obj)
+Appends the string representation of the Object argument.
+StringBuilder append(String str)
+Appends the specified string to this character sequence.

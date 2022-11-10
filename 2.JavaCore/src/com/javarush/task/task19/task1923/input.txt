@@ -1,0 +1,6 @@
+A4 map entry (key-value pair). The Map.ent5rySet method re45turns a 546collection-view of the map,
+whose elements are of this class. The only way to obtain a reference to a map entry is from the
+ iter45ator of this colle5ction-view. These Map.Entry objects are valid 45only for the duration of the
+  iteration; more formally, the behavior of a map entry is undefined if the
+ backing map h5as been modified after the e452ntry45 was returned b1y the
+iterator, except throu45gh the setValue operation on the map entry.
