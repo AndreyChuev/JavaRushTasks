@@ -7,7 +7,6 @@ target/
 .repository/
 *.iws
 *.class
-*.info
 *.jar
 
 
