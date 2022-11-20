@@ -1,5 +1,6 @@
 package com.javarush.task.task37.task3702;
 
+import com.javarush.task.task37.task3702.female.FemaleFactory;
 import com.javarush.task.task37.task3702.male.MaleFactory;
 
 public class Solution {
@@ -10,5 +11,11 @@ public class Solution {
         System.out.println(maleFactory.getPerson(99));
         System.out.println(maleFactory.getPerson(4));
         System.out.println(maleFactory.getPerson(15));
+
+        FemaleFactory femaleFactory = new FemaleFactory();
+
+        System.out.println(femaleFactory.getPerson(99));
+        System.out.println(femaleFactory.getPerson(4));
+        System.out.println(femaleFactory.getPerson(15));
     }
 }
