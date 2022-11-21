@@ -13,6 +13,39 @@ public class Client {
 
     protected Connection connection;
 
+    public static void main(String[] args) {
+        Client client = new Client();
+        client.run();
+    }
+
+    public void run() {
+        SocketThread socketThread = getSocketThread();
+        socketThread.setDaemon(true);
+        socketThread.start();
+        synchronized (this) {
+            try {
+                wait();
+                if (clientConnected) {
+                    ConsoleHelper.writeMessage("Соеденение установленно");
+                } else {
+                    ConsoleHelper.writeMessage("Произошла ошибка во время работы клиента");
+                }
+
+                while (clientConnected) {
+                    String text = ConsoleHelper.readString();
+
+                    if (text.equals("exit"))
+                        break;
+
+                    if (shouldSendTextFromConsole())
+                        sendTextMessage(text);
+                }
+            } catch (InterruptedException e) {
+                ConsoleHelper.writeMessage("Ошибка потока");
+            }
+        }
+    }
+
     protected String getServerAddress() {
         ConsoleHelper.writeMessage("Введите адрес сервера:");
         return ConsoleHelper.readString();
