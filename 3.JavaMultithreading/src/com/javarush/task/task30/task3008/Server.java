@@ -72,7 +72,7 @@ public class Server {
         private void notifyUsers(Connection connection, String userName) throws IOException {
             for (String name : connectionMap.keySet()) {
                 if (!name.equals(userName)) {
-                    Message message = new Message(MessageType.USER_ADDED, userName);
+                    Message message = new Message(MessageType.USER_ADDED, name);
                     connection.send(message);
                 }
             }
