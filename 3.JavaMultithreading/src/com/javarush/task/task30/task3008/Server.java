@@ -49,6 +49,18 @@ public class Server {
             this.socket = socket;
         }
 
+        private void serverMainLoop(Connection connection, String userName) throws IOException, ClassNotFoundException{
+            while (true) {
+                Message receivedMessage = connection.receive();
+                if (receivedMessage.getType() == MessageType.TEXT) {
+                    Message newMessage = new Message(MessageType.TEXT, userName + ": " + receivedMessage.getData());
+                    sendBroadcastMessage(newMessage);
+                } else {
+                    ConsoleHelper.writeMessage("Ошибка при отправке сообщения");
+                }
+            }
+        }
+
         private String serverHandshake(Connection connection) throws IOException, ClassNotFoundException {
             Message greeting = new Message(MessageType.NAME_REQUEST, "Введите имя:");
             connection.send(greeting);
