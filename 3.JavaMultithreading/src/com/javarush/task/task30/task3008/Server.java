@@ -43,10 +43,32 @@ public class Server {
 
     private static class Handler extends Thread {
 
+        private static final Message NAME_REQUEST_MESSAGE = new Message(MessageType.NAME_REQUEST,
+                "Здравствуйте, введите имя:");
+        private static final Message NAME_ACCEPTED_MESSAGE = new Message(MessageType.NAME_ACCEPTED,
+                "Имя принято, вы добваленны в чат");
+
         private Socket socket;
 
         public Handler(Socket socket) {
             this.socket = socket;
+        }
+
+        private String serverHandshake(Connection connection) throws IOException, ClassNotFoundException {
+            connection.send(NAME_REQUEST_MESSAGE);
+            Message response = connection.receive();
+            if (response.getType() == MessageType.USER_NAME) {
+                String name = response.getData();
+                if (name.isEmpty() || connectionMap.containsKey(name)) {
+                    return serverHandshake(connection);
+                } else {
+                    connectionMap.put(name, connection);
+                    connection.send(NAME_ACCEPTED_MESSAGE);
+                    return name;
+                }
+            } else {
+                return serverHandshake(connection);
+            }
         }
     }
 }
