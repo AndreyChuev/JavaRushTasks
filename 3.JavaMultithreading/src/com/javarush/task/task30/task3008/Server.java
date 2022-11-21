@@ -59,7 +59,7 @@ public class Server {
             Message response = connection.receive();
             if (response.getType() == MessageType.USER_NAME) {
                 String name = response.getData();
-                if (name.isEmpty() || connectionMap.containsKey(name)) {
+                if (name == null || name.isEmpty() || connectionMap.containsKey(name)) {
                     return serverHandshake(connection);
                 } else {
                     connectionMap.put(name, connection);
