@@ -49,6 +49,27 @@ public class Server {
             this.socket = socket;
         }
 
+        @Override
+        public void run() {
+            String name = null;
+            try (Connection connection = new Connection(socket)) {
+                ConsoleHelper.writeMessage("Установленно соединение с " + connection.getRemoteSocketAddress());
+                name = serverHandshake(connection);
+                notifyUsers(connection, name);
+                serverMainLoop(connection, name);
+            } catch (IOException | ClassNotFoundException e) {
+                ConsoleHelper.writeMessage("Ошибка при обмене данными с удалённым адресом: " + e.getMessage());
+            } finally {
+                connectionMap.remove(name);
+                try {
+                    notifyUsersAboutRemoval(name);
+                } catch (IOException e) {
+                    ConsoleHelper.writeMessage("Ошибка при оповещении");
+                }
+                ConsoleHelper.writeMessage("Соединение закрыто");
+            }
+        }
+
         private void serverMainLoop(Connection connection, String userName) throws IOException, ClassNotFoundException{
             while (true) {
                 Message receivedMessage = connection.receive();
@@ -87,6 +108,14 @@ public class Server {
                     Message message = new Message(MessageType.USER_ADDED, name);
                     connection.send(message);
                 }
+            }
+        }
+
+        private void notifyUsersAboutRemoval(String userName) throws IOException {
+            for (String name : connectionMap.keySet()) {
+                Connection connection = connectionMap.get(name);
+                Message message = new Message(MessageType.USER_REMOVED, userName);
+                connection.send(message);
             }
         }
     }
