@@ -79,7 +79,25 @@ public class Client {
         return new SocketThread();
     }
 
-    public static class SocketThread extends Thread {
+    public class SocketThread extends Thread {
 
+        protected void processIncomingMessage(String userName) {
+            ConsoleHelper.writeMessage(userName);
+        }
+
+        protected void informAboutAddingNewUser(String userName) {
+            ConsoleHelper.writeMessage("Пользователь " + userName + " присоединился к чату");
+        }
+
+        protected void informAboutDeletingNewUser(String userName) {
+            ConsoleHelper.writeMessage("Участник " + userName + " покинул чат");
+        }
+
+        protected void notifyConnectionStatusChanged(boolean clientConnected) {
+            Client.this.clientConnected = clientConnected;
+            synchronized (Client.this) {
+                Client.this.notify();
+            }
+        }
     }
 }
