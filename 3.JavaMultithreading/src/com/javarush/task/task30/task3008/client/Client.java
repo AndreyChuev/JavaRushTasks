@@ -33,19 +33,20 @@ public class Client {
     }
 
     protected void sendTextMessage(String text) {
-        Message message = new Message(MessageType.TEXT, text);
         try {
+            Message message = new Message(MessageType.TEXT, text);
             connection.send(message);
         } catch (IOException e) {
-            ConsoleHelper.writeMessage("Ошибка при отправке сообщения");
             clientConnected = false;
+            ConsoleHelper.writeMessage("Ошибка при отправке сообщения");
         }
+    }
+
+    protected SocketThread getSocketThread() {
+        return new SocketThread();
     }
 
     public static class SocketThread extends Thread {
 
-        protected static SocketThread getSocketThread() {
-            return new SocketThread();
-        }
     }
 }
