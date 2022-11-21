@@ -52,21 +52,31 @@ public class Server {
         @Override
         public void run() {
             String name = null;
-            try (Connection connection = new Connection(socket)) {
-                ConsoleHelper.writeMessage("Установленно соединение с " + connection.getRemoteSocketAddress());
+            try {
+                ConsoleHelper.writeMessage("Установлено новое соединение с удаленным адресом " + socket.getRemoteSocketAddress());
+                Connection connection = new Connection(socket);
                 name = serverHandshake(connection);
+                Message message = new Message(MessageType.USER_ADDED, name);
+                sendBroadcastMessage(message);
                 notifyUsers(connection, name);
                 serverMainLoop(connection, name);
             } catch (IOException | ClassNotFoundException e) {
-                ConsoleHelper.writeMessage("Ошибка при обмене данными с удалённым адресом: " + e.getMessage());
+                ConsoleHelper.writeMessage("Произошла ошибка при обмене данными с удаленным адресом");
             } finally {
-                connectionMap.remove(name);
+                Connection connection = null;
                 try {
-                    notifyUsersAboutRemoval(name);
+                    if (name != null) {
+                        connection = connectionMap.remove(name);
+                        Message message = new Message(MessageType.USER_REMOVED, name);
+                        sendBroadcastMessage(message);
+                    }
+                    if (connection != null) {
+                        connection.close();
+                    }
                 } catch (IOException e) {
-                    ConsoleHelper.writeMessage("Ошибка при оповещении");
+                    ConsoleHelper.writeMessage("Ошибка при закрытии ресурсов " + e.getMessage());
                 }
-                ConsoleHelper.writeMessage("Соединение закрыто");
+                ConsoleHelper.writeMessage("Соеденение закрыто");
             }
         }
 
@@ -108,14 +118,6 @@ public class Server {
                     Message message = new Message(MessageType.USER_ADDED, name);
                     connection.send(message);
                 }
-            }
-        }
-
-        private void notifyUsersAboutRemoval(String userName) throws IOException {
-            for (String name : connectionMap.keySet()) {
-                Connection connection = connectionMap.get(name);
-                Message message = new Message(MessageType.USER_REMOVED, userName);
-                connection.send(message);
             }
         }
     }
