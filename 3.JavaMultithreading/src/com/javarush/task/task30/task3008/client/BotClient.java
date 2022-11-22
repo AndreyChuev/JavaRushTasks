@@ -9,7 +9,7 @@ public class BotClient extends Client {
 
     @Override
     protected String getUserName() {
-        return "date_bot_" + Math.abs(Math.random() * 100);
+        return "date_bot_" + (int) (Math.random() * 100);
     }
 
     @Override
