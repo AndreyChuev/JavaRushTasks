@@ -3,7 +3,6 @@ package com.javarush.task.task30.task3008;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 
 public class ConsoleHelper {
 
@@ -17,12 +16,12 @@ public class ConsoleHelper {
     }
 
     public static void writeMessage(String message) {
-        System.out.println(encode(message));
+        System.out.println(StringUtils.encodeToWindows1251(message));
     }
 
     public static String readString() {
         try {
-            return encode(reader.readLine());
+            return StringUtils.encodeToWindows1251(reader.readLine());
         } catch (IOException e) {
             System.out.println(STRING_ENTRY_ERROR);
             return readString();
@@ -36,13 +35,5 @@ public class ConsoleHelper {
             System.out.println(INTEGER_ENTRY_ERROR);
             return readInt();
         }
-    }
-
-    private static String encode(String text) {
-        try {
-            return new String(text.getBytes(), "windows-1251");
-        } catch (UnsupportedEncodingException ignore) {
-        }
-        return text;
     }
 }
