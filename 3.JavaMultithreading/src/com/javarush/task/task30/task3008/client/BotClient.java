@@ -47,9 +47,8 @@ public class BotClient extends Client {
                 if (command != DateCommand.UNSPECIFIED) {
                     Calendar calendar = new GregorianCalendar();
                     SimpleDateFormat formatter = new SimpleDateFormat(command.getFormat());
-                    String message = "Информация для " + name
-                            + ": " + formatter.format(calendar.getTime());
-                    super.processIncomingMessage(message);
+                    String message = String.format("Информация для %s: %s", name, formatter.format(calendar.getTime()));
+                    sendTextMessage(message);
                 }
             }
         }

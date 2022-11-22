@@ -3,6 +3,7 @@ package com.javarush.task.task30.task3008;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 public class ConsoleHelper {
 
@@ -12,7 +13,10 @@ public class ConsoleHelper {
 
 
     static {
-        reader = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            reader = new BufferedReader(new InputStreamReader(System.in, "windows-1251"));
+        } catch (UnsupportedEncodingException ignore) {
+        }
     }
 
     public static void writeMessage(String message) {
