@@ -14,7 +14,7 @@ public class Message implements Serializable {
 
     public Message(MessageType type, String data) {
         this.type = type;
-        this.data = StringUtils.encodeToWindows1251(data);
+        this.data = data;
     }
 
     public MessageType getType() {

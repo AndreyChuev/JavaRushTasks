@@ -19,7 +19,7 @@ public class Server {
         int port = ConsoleHelper.readInt();
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            ConsoleHelper.writeMessage("Сервер запущен! " + serverSocket.getInetAddress());
+            ConsoleHelper.writeMessage("Сервер запущен! " + serverSocket.getLocalSocketAddress());
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
                 Handler handler = new Handler(socket);
