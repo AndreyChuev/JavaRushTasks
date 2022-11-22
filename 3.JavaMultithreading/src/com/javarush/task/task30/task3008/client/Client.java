@@ -6,6 +6,7 @@ import com.javarush.task.task30.task3008.Message;
 import com.javarush.task.task30.task3008.MessageType;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class Client {
 
@@ -80,6 +81,19 @@ public class Client {
     }
 
     public class SocketThread extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                String serverAddress = getServerAddress();
+                int serverPort = getServerPort();
+                connection = new Connection(new Socket(serverAddress, serverPort));
+                clientHandshake();
+                clientMainLoop();
+            } catch (ClassNotFoundException | IOException e) {
+                notifyConnectionStatusChanged(false);
+            }
+        }
 
         protected void processIncomingMessage(String text) {
             ConsoleHelper.writeMessage(text);
