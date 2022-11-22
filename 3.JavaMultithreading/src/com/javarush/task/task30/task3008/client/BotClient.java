@@ -43,49 +43,37 @@ public class BotClient extends Client {
                 String name = splitText[0].trim();
                 String data = splitText[1].trim();
 
-                DateCommand command = DateCommand.getDateCommand(data);
-                if (command != DateCommand.UNSPECIFIED) {
+                String pattern = getPattern(data);
+                if (pattern != null) {
                     Calendar calendar = new GregorianCalendar();
-                    SimpleDateFormat formatter = new SimpleDateFormat(command.getFormat());
-                    String message = String.format("Информация для %s: %s", name, formatter.format(calendar.getTime()));
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+                    String message = String.format("Информация для %s: %s", name, dateFormat.format(calendar.getTime()));
                     sendTextMessage(message);
                 }
             }
         }
 
-
-
-        private enum DateCommand {
-            DATE("дата", "d.MM.YYYY"),
-            DAY("день", "d"),
-            MONTH("месяц", "MMMM"),
-            YEAR("год", "YYYY"),
-            TIME("время", "H:mm:ss"),
-            HOUR("час", "H"),
-            MINUTES("минуты", "m"),
-            SECONDS("секунды", "s"),
-            UNSPECIFIED("", "");
-
-            private final String command;
-            private final String format;
-
-            DateCommand(String command, String format) {
-                this.command = command;
-                this.format = format;
-            }
-
-            public String getFormat() {
-                return format;
-            }
-
-            private static DateCommand getDateCommand(String textCommand) {
-                for (DateCommand dateCommand : values()) {
-                    if (dateCommand.command.equals(textCommand)) {
-                        return dateCommand;
-                    }
-                }
-                return UNSPECIFIED;
+        private String getPattern(String text) {
+            if (text.equals("дата")) {
+                return "d.MM.YYYY";
+            } else if (text.equals("день")) {
+                return "d";
+            } else if (text.equals("месяц")) {
+                return "MMMM";
+            } else if (text.equals("год")) {
+                return "YYYY";
+            } else if (text.equals("время")) {
+                return "H:mm:ss";
+            } else if (text.equals("час")) {
+                return "H";
+            } else if (text.equals("минуты")) {
+                return "m";
+            } else if (text.equals("секунды")) {
+                return "s";
+            } else {
+                return null;
             }
         }
+
     }
 }
