@@ -37,8 +37,8 @@ public class BotClient extends Client {
 
         @Override
         protected void processIncomingMessage(String text) {
+            super.processIncomingMessage(text);
             if (text.contains(":")) {
-                super.processIncomingMessage(text);
                 String[] splitText = text.split(":");
                 String name = splitText[0].trim();
                 String data = splitText[1].trim();
