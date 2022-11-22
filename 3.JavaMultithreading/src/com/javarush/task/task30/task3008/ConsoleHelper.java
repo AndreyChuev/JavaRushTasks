@@ -16,12 +16,12 @@ public class ConsoleHelper {
     }
 
     public static void writeMessage(String message) {
-        System.out.println(StringUtils.encodeToWindows1251(message));
+        System.out.println(message);
     }
 
     public static String readString() {
         try {
-            return StringUtils.encodeToWindows1251(reader.readLine());
+            return reader.readLine();
         } catch (IOException e) {
             System.out.println(STRING_ENTRY_ERROR);
             return readString();
