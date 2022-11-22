@@ -81,8 +81,38 @@ public class Client {
 
     public class SocketThread extends Thread {
 
-        protected void processIncomingMessage(String userName) {
-            ConsoleHelper.writeMessage(userName);
+        protected void processIncomingMessage(String text) {
+            ConsoleHelper.writeMessage(text);
+        }
+
+        protected void clientHandshake() throws IOException, ClassNotFoundException {
+            while (true) {
+                Message receivedMessage = connection.receive();
+                if (receivedMessage.getType() == MessageType.NAME_REQUEST) {
+                    Message response = new Message(MessageType.USER_NAME, getUserName());
+                    connection.send(response);
+                } else if (receivedMessage.getType() == MessageType.NAME_ACCEPTED) {
+                    notifyConnectionStatusChanged(true);
+                    break;
+                } else {
+                    throw new IOException("Unexpected MessageType");
+                }
+            }
+        }
+
+        protected void clientMainLoop() throws IOException, ClassNotFoundException {
+            while (true) {
+                Message receivedMessage = connection.receive();
+                if (receivedMessage.getType() == MessageType.TEXT) {
+                    processIncomingMessage(receivedMessage.getData());
+                } else if (receivedMessage.getType() == MessageType.USER_ADDED) {
+                    informAboutAddingNewUser(receivedMessage.getData());
+                } else if (receivedMessage.getType() == MessageType.USER_REMOVED) {
+                    informAboutDeletingNewUser(receivedMessage.getData());
+                } else {
+                    throw new IOException("Unexpected MessageType");
+                }
+            }
         }
 
         protected void informAboutAddingNewUser(String userName) {
