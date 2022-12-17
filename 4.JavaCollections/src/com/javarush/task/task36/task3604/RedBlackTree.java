@@ -8,11 +8,11 @@ public class RedBlackTree {
         EMPTY.right = EMPTY;
     }
 
-    protected Node current;
-    private Node parent;
-    private Node grand;
-    private Node great;
-    private Node header;
+    protected Node current; //текущий
+    private Node parent; //родитель
+    private Node grand;  //дедушка
+    private Node great;  //прадедушка
+    private Node header; //корень
 
     public RedBlackTree() {
         header = new Node(Integer.MIN_VALUE);
