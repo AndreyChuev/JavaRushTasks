@@ -9,10 +9,10 @@ public class RedBlackTree {
     }
 
     protected Node current; //текущий
-    private Node parent; //родитель
-    private Node grand;  //дедушка
-    private Node great;  //прадедушка
-    private Node header; //корень
+    private Node parent;    //родитель
+    private Node grand;     //дедушка
+    private Node great;     //прадедушка
+    private Node header;    //головной
 
     public RedBlackTree() {
         header = new Node(Integer.MIN_VALUE);
@@ -21,7 +21,7 @@ public class RedBlackTree {
     }
 
     public boolean isEmpty() {
-        return header.left == EMPTY;
+        return header.left == EMPTY && header.right == EMPTY;
     }
 
     public void clear() {
@@ -32,12 +32,12 @@ public class RedBlackTree {
         current = grand = parent = header;
         EMPTY.element = item;
         while (current.element != item) {
-            great = grand;
-            grand = parent;
-            parent = current;
+            great = grand; // прадедушка становится дудушкой
+            grand = parent; // дедушка становится родителем
+            parent = current; // родитель стновится текущим
             current = item > current.element ? current.right : current.left;
 
-            if (current.left.color == Color.RED && current.right.color == Color.BLACK) {
+            if (current.left.color == Color.RED && current.right.color == Color.RED) {
                 reorient(item);
             }
         }
@@ -96,10 +96,10 @@ public class RedBlackTree {
     }
 
     private Node rotateWithRightNode(Node element) {
-        Node left = element.left;
-        element.left = left.right;
-        left.right = element;
-        return left;
+        Node right = element.right;
+        element.right = right.left;
+        right.left = element;
+        return right;
     }
 
     public static enum Color {
