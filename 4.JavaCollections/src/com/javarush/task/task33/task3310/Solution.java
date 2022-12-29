@@ -26,22 +26,21 @@ public class Solution {
 
         Shortener shortener = new Shortener(strategy);
 
-        Set<Long> ids = measureTime(() -> genStrings.stream().map(shortener::getId).collect(Collectors.toSet()));
-        Set<String> strings = measureTime(() -> ids.stream().map(shortener::getString).collect(Collectors.toSet()));
+        Date start = new Date();
+        Set<Long> ids = genStrings.stream().map(shortener::getId).collect(Collectors.toSet());
+        Date finish = new Date();
+        Helper.printMessage(String.valueOf(finish.getTime() - start.getTime()));
+
+        start = new Date();
+        Set<String> strings = ids.stream().map(shortener::getString).collect(Collectors.toSet());
+        finish = new Date();
+        Helper.printMessage(String.valueOf(finish.getTime() - start.getTime()));
 
         if (genStrings.equals(strings)) {
             Helper.printMessage("Тест пройден.");
         } else {
             Helper.printMessage("Тест не пройден.");
         }
-    }
-
-    private <T> T measureTime(Supplier<T> supplier) {
-        Date start = new Date();
-        T result = supplier.get();
-        Date finish = new Date();
-        Helper.printMessage(String.valueOf(finish.getTime() - start.getTime()));
-        return result;
     }
 
     public Set<Long> getIds(Shortener shortener, Set<String> strings) {
