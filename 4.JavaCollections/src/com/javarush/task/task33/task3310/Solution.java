@@ -6,18 +6,16 @@ import com.javarush.task.task33.task3310.strategy.StorageStrategy;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution {
 
     public static void main(String[] args) {
-        Solution solution = new Solution();
-        solution.testStrategy(new HashMapStorageStrategy(), 10_000);
+        testStrategy(new HashMapStorageStrategy(), 10000);
     }
 
-    public void testStrategy(StorageStrategy strategy, long elementNumber) {
+    public static void testStrategy(StorageStrategy strategy, long elementNumber) {
         Helper.printMessage(strategy.getClass().getSimpleName());
 
         Set<String> genStrings = Stream.generate(Helper::generateRandomString)
@@ -27,27 +25,27 @@ public class Solution {
         Shortener shortener = new Shortener(strategy);
 
         Date start = new Date();
-        Set<Long> ids = genStrings.stream().map(shortener::getId).collect(Collectors.toSet());
+        Set<Long> ids = getIds(shortener, genStrings);
         Date finish = new Date();
         Helper.printMessage(String.valueOf(finish.getTime() - start.getTime()));
 
-        start = new Date();
-        Set<String> strings = ids.stream().map(shortener::getString).collect(Collectors.toSet());
-        finish = new Date();
-        Helper.printMessage(String.valueOf(finish.getTime() - start.getTime()));
+        Date start1 = new Date();
+        Set<String> strings = getStrings(shortener, ids);
+        Date finish1 = new Date();
+        Helper.printMessage(String.valueOf(finish1.getTime() - start1.getTime()));
 
-        if (genStrings.equals(strings)) {
+        if (genStrings.containsAll(strings)) {
             Helper.printMessage("Тест пройден.");
         } else {
             Helper.printMessage("Тест не пройден.");
         }
     }
 
-    public Set<Long> getIds(Shortener shortener, Set<String> strings) {
+    public static Set<Long> getIds(Shortener shortener, Set<String> strings) {
         return strings.stream().map(shortener::getId).collect(Collectors.toSet());
     }
 
-    public Set<String> getStrings(Shortener shortener, Set<Long> keys) {
+    public static Set<String> getStrings(Shortener shortener, Set<Long> keys) {
         return keys.stream().map(shortener::getString).collect(Collectors.toSet());
     }
 }
