@@ -32,70 +32,29 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         return entry;
     }
 
-    void resize() {
+    void resize(int newCapacity) {
         final int MAXIMUM_CAPACITY = 1073741824;
-        Entry[] oldTable = table;
-        int oldCapacity = (oldTable == null) ? 0 : oldTable.length;
-        int oldThreshold = threshold;
-        int newCapacity, newThreshold = 0;
-        if (oldCapacity > 0) {
-            if (oldCapacity >= MAXIMUM_CAPACITY) {
-                threshold = Integer.MAX_VALUE;
-                return;
-            } else if ((newCapacity = oldCapacity << 1) < MAXIMUM_CAPACITY &&
-                    oldCapacity >= DEFAULT_INITIAL_CAPACITY) {
-                newThreshold = oldThreshold << 1;
-            }
-        } else if (oldThreshold > 0) {
-            newCapacity = oldThreshold;
-        } else {
-            newCapacity = DEFAULT_INITIAL_CAPACITY;
-            newThreshold = (int) (DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
+        int oldCapacity = table.length;
+        if (oldCapacity == MAXIMUM_CAPACITY) {
+            threshold = Integer.MAX_VALUE;
+            return;
         }
-        if (newThreshold == 0) {
-            float ft = (float) newCapacity * loadFactor;
-            newThreshold = (newCapacity < MAXIMUM_CAPACITY && ft < (float) MAXIMUM_CAPACITY ?
-                    (int) ft : Integer.MAX_VALUE);
-        }
-        threshold = newThreshold;
+
         Entry[] newTable = new Entry[newCapacity];
+        transfer(newTable);
         table = newTable;
-        if (oldTable != null) {
-            for (int i = 0; i < oldCapacity; i++) {
-                Entry entry;
-                if ((entry = oldTable[i]) != null) {
-                    oldTable[i] = null;
-                    if (entry.next == null) {
-                        newTable[entry.hash & (newCapacity - 1)] = entry;
-                    } else {
-                        Entry lowHead = null, lowTail = null;
-                        Entry highHead = null, highTail = null;
-                        Entry next;
-                        do {
-                            next = entry.next;
-                            if ((entry.hash & oldCapacity) == 0) {
-                                if (lowTail == null)
-                                    lowHead = entry;
-                                else
-                                    lowTail.next = entry;
-                                lowTail = entry;
-                            } else {
-                                if (highTail == null)
-                                    highHead = entry;
-                                else
-                                    highTail.next = entry;
-                                highTail = entry;
-                            }
-                        } while ((entry = next) != null);
-                        if (lowTail != null) {
-                            lowTail.next = null;
-                            newTable[i] = lowHead;
-                        } if (highTail != null) {
-                            highTail.next = null;
-                            newTable[i + oldCapacity] = highHead;
-                        }
-                    }
-                }
+    }
+
+    private void transfer(Entry[] newTable) {
+        for (int i = 0; i < table.length; i++) {
+            Entry e = table[i];
+            table[i] = null;
+            while (e != null) {
+                Entry next = e.next;
+                int index = indexFor(e.hash, newTable.length);
+                e.next = newTable[index];
+                newTable[index] = e;
+                e = next;
             }
         }
     }
