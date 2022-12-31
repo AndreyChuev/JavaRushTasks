@@ -32,7 +32,7 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         return entry;
     }
 
-    void transfer(Entry[] newTable) {
+    private void transfer(Entry[] newTable) {
         for (int i = 0; i < table.length; i++) {
             Entry e = table[i];
             table[i] = null;
