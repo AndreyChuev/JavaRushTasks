@@ -100,6 +100,20 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         }
     }
 
+    private void transfer(Entry[] newTable) {
+        for (int i = 0; i < table.length; i++) {
+            Entry entry = table[i];
+            table = null;
+            while (entry != null) {
+                Entry next = entry.next;
+                int index = indexFor(entry.hash, newTable.length);
+                entry.next = newTable[index];
+                newTable[index] = entry;
+                entry = next;
+            }
+        }
+    }
+
     @Override
     public boolean containsKey(Long key) {
         return false;
