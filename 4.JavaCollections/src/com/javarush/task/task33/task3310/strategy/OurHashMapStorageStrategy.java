@@ -32,6 +32,19 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         return entry;
     }
 
+    void resize(int newCapacity) {
+        final int MAXIMUM_CAPACITY = 1073741824;
+        int oldCapacity = table.length;
+        if (oldCapacity == MAXIMUM_CAPACITY) {
+            threshold = Integer.MAX_VALUE;
+            return;
+        }
+
+        Entry[] newTable = new Entry[newCapacity];
+        transfer(newTable);
+        table = newTable;
+    }
+
     private void transfer(Entry[] newTable) {
         for (int i = 0; i < table.length; i++) {
             Entry e = table[i];
