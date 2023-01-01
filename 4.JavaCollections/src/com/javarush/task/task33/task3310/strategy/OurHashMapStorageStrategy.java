@@ -1,5 +1,7 @@
 package com.javarush.task.task33.task3310.strategy;
 
+import java.util.Objects;
+
 public class OurHashMapStorageStrategy implements StorageStrategy {
 
     private static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -17,6 +19,29 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
 
     private static int indexFor(int hash, int length) {
         return hash & length - 1;
+    }
+
+    private void addEntry(int hash, Long key, String value, int bucketIndex) {
+        Entry entry = table[bucketIndex];
+        if (entry == null) {
+            table[bucketIndex] = new Entry(hash, key, value, null);
+        } else {
+            insertEntry(table[bucketIndex], new Entry(hash, key, value, null));
+        }
+
+        if (++size > threshold) {
+            resize(table.length * 2);
+        }
+    }
+
+    private void insertEntry(Entry current, Entry target) {
+        if (current.hash == target.hash && current.key.equals(target.key)) {
+            current.value = target.value;
+        } else if (current.next == null) {
+            current.next = target;
+        } else {
+            insertEntry(current.next, target);
+        }
     }
 
     Entry getEntry(Long key) {
