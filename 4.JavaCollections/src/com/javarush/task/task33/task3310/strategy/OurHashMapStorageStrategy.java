@@ -40,18 +40,22 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         Entry[] newTable = new Entry[newCapacity];
         transfer(newTable);
         table = newTable;
+
+        float calcThreshold = (float) newCapacity * loadFactor;
+        threshold = newCapacity < MAXIMUM_CAPACITY && calcThreshold < (float) MAXIMUM_CAPACITY ?
+                (int) calcThreshold : Integer.MAX_VALUE;
     }
 
     private void transfer(Entry[] newTable) {
         for (int i = 0; i < table.length; i++) {
-            Entry e = table[i];
+            Entry entry = table[i];
             table[i] = null;
-            while (e != null) {
-                Entry next = e.next;
-                int index = indexFor(e.hash, newTable.length);
-                e.next = newTable[index];
-                newTable[index] = e;
-                e = next;
+            while (entry != null) {
+                Entry next = entry.next;
+                int index = indexFor(entry.hash, newTable.length);
+                entry.next = newTable[index];
+                newTable[index] = entry;
+                entry = next;
             }
         }
     }
