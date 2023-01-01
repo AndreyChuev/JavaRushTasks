@@ -24,7 +24,16 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         if (entry == null) {
             createEntry(hash, key, value, bucketIndex);
         } else {
-            insertEntry(table[bucketIndex], new Entry(hash, key, value, null));
+//            insertEntry(table[bucketIndex], new Entry(hash, key, value, null));
+            Entry target = new Entry(hash, key, value, null);
+            for (Entry current = entry; ; current = current.next) {
+                if (current.hash == target.hash && current.key.equals(target.key)) {
+                    current.value = target.value;
+                    break;
+                } else if (current.next == null) {
+                    current.next = target;
+                }
+            }
         }
 
         if (++size > threshold) {
