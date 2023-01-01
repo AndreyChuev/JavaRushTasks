@@ -1,7 +1,5 @@
 package com.javarush.task.task33.task3310.strategy;
 
-import java.util.Objects;
-
 public class OurHashMapStorageStrategy implements StorageStrategy {
 
     private static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -108,13 +106,7 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
     @Override
     public boolean containsValue(String value) {
         if (size > 0) {
-            for (Entry entry : table) {
-                for (Entry current = entry; current != null; current = entry.next) {
-                    String eVal = current.value;
-                    if (eVal.hashCode() == value.hashCode() && eVal.equals(value))
-                        return true;
-                }
-            }
+            return getKey(value) != null;
         }
         return false;
     }
@@ -122,16 +114,27 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
 
     @Override
     public void put(Long key, String value) {
-
+        int hash = hash(key);
+        int bucketIndex = indexFor(hash, table.length);
+        addEntry(hash, key, value, bucketIndex);
     }
 
     @Override
     public Long getKey(String value) {
+        if (size > 0) {
+            for (Entry entry : table) {
+                for (Entry current = entry; current != null; current = entry.next) {
+                    String eVal = current.value;
+                    if (eVal.hashCode() == value.hashCode() && eVal.equals(value))
+                        return current.getKey();
+                }
+            }
+        }
         return null;
     }
 
     @Override
     public String getValue(Long key) {
-        return null;
+        return getEntry(key).value;
     }
 }
