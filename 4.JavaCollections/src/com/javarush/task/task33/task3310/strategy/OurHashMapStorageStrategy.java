@@ -24,7 +24,7 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
     private void addEntry(int hash, Long key, String value, int bucketIndex) {
         Entry entry = table[bucketIndex];
         if (entry == null) {
-            table[bucketIndex] = new Entry(hash, key, value, null);
+            createEntry(hash, key, value, bucketIndex);
         } else {
             insertEntry(table[bucketIndex], new Entry(hash, key, value, null));
         }
@@ -41,6 +41,21 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
             current.next = target;
         } else {
             insertEntry(current.next, target);
+        }
+    }
+
+    /**
+     * Идиотизм задания, добавляет new Entry в пустой бакет
+     * @param hash хэш ключа
+     * @param key значение ключа
+     * @param value значение
+     * @param bucketIndex индекс бакета в таблице
+     */
+    private void createEntry(int hash, Long key, String value, int bucketIndex) {
+        if (table[bucketIndex] == null) {
+            table[bucketIndex] = new Entry(hash, key, value, null);
+        } else {
+            throw new RuntimeException("Adding entry to a non-empty bucket is prohibited!");
         }
     }
 
