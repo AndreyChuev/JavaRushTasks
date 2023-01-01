@@ -12,7 +12,7 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
     private int threshold = (int) (DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR);
     private float loadFactor = DEFAULT_LOAD_FACTOR;
 
-    static int hash(Long k) {
+    private static int hash(Long k) {
         int hash;
         return k == null ? 0 : (hash = k.hashCode()) ^ (hash >>> 16);
     }
@@ -59,7 +59,7 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         }
     }
 
-    Entry getEntry(Long key) {
+    private Entry getEntry(Long key) {
         int keyHash = hash(key);
         int index = indexFor(keyHash, table.length);
         Entry entry = table[index];
@@ -69,7 +69,7 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
         return entry;
     }
 
-    void resize(int newCapacity) {
+    private void resize(int newCapacity) {
         final int MAXIMUM_CAPACITY = 1073741824;
         int oldCapacity = table.length;
         if (oldCapacity == MAXIMUM_CAPACITY) {
