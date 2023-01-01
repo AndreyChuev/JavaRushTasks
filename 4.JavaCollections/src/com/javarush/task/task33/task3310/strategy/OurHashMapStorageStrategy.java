@@ -102,13 +102,23 @@ public class OurHashMapStorageStrategy implements StorageStrategy {
 
     @Override
     public boolean containsKey(Long key) {
-        return false;
+        return getEntry(key) != null;
     }
 
     @Override
     public boolean containsValue(String value) {
+        if (size > 0) {
+            for (Entry entry : table) {
+                for (Entry current = entry; current != null; current = entry.next) {
+                    String eVal = current.value;
+                    if (eVal.hashCode() == value.hashCode() && eVal.equals(value))
+                        return true;
+                }
+            }
+        }
         return false;
     }
+
 
     @Override
     public void put(Long key, String value) {
