@@ -42,7 +42,7 @@ public class FileBucket {
                 if (current.hash == newEntry.hash && current.key.equals(newEntry.key)) {
                     current.value = newEntry.value;
                     break;
-                } else if (entry.next == null) {
+                } else if (current.next == null) {
                     current.next = newEntry;
                     break;
                 }

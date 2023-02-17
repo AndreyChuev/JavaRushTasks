@@ -34,6 +34,9 @@ public class FileStorageStrategy implements StorageStrategy {
         Entry target = new Entry(hash, key, value, null);
         table[bucketIndex].putEntry(target);
 
+        // Баг в задаче 9
+        size++;
+
         if (table[bucketIndex].getFileSize() > DEFAULT_BUCKET_SIZE_LIMIT) {
             int newCapacity = table.length * 2;
             if (newCapacity > 0) {
