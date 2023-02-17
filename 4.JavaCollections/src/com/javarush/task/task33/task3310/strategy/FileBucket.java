@@ -32,11 +32,18 @@ public class FileBucket {
         }
     }
 
-    public void putEntry(Entry entry) {
-        Entry current = getEntry();
+    public void putEntry(Entry newEntry) {
+        Entry entry = getEntry();
 
-        while (current != null && current.next != null) {
-            current = current.next;
+        if (entry == null) {
+            entry = newEntry;
+        } else {
+            for (Entry current = entry; ; current = current.next) {
+                if (entry.next == null) {
+                    current.next = newEntry;
+                    break;
+                }
+            }
         }
 
         try (ObjectOutputStream os = new ObjectOutputStream(Files.newOutputStream(path))){
