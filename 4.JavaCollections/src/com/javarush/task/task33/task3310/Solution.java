@@ -12,7 +12,7 @@ public class Solution {
     public static void main(String[] args) {
         testStrategy(new HashMapStorageStrategy(), 10_000);
         testStrategy(new OurHashMapStorageStrategy(), 10_000);
-//        testStrategy(new FileStorageStrategy(), 10_000);
+        testStrategy(new FileStorageStrategy(), 10_000);
         testStrategy(new OurHashBiMapStorageStrategy(), 10_000);
     }
 
