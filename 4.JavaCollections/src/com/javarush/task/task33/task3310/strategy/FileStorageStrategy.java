@@ -51,6 +51,7 @@ public class FileStorageStrategy implements StorageStrategy {
                 int newIndex = indexFor(current.hash, newTable.length);
                 newTable[newIndex].putEntry(copy);
             }
+            bucket.remove();
         }
         table = newTable;
     }
