@@ -39,7 +39,10 @@ public class FileBucket {
             entry = newEntry;
         } else {
             for (Entry current = entry; ; current = current.next) {
-                if (entry.next == null) {
+                if (current.hash == newEntry.hash && current.key.equals(newEntry.key)) {
+                    current.value = newEntry.value;
+                    break;
+                } else if (entry.next == null) {
                     current.next = newEntry;
                     break;
                 }
