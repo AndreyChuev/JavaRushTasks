@@ -6,12 +6,16 @@ import com.javarush.task.task33.task3310.strategy.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FunctionalTest {
 
     public void testStorage(Shortener shortener) {
-        List<String> strings = List.of("testString", "testStringUni", "testString");
+        List<String> strings = new ArrayList<>();
+        strings.add("testString");
+        strings.add("testStringUni");
+        strings.add("testString");
 
         List<Long> ids = strings.stream()
                 .map(shortener::getId)
