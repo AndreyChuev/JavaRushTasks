@@ -14,10 +14,18 @@ public class TransferObject {
         }
         System.out.println("Got: " + value);
         isValuePresent = false;
+        notifyAll();
         return value;
     }
 
     public synchronized void put(int value) {
+        while (isValuePresent) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         this.value = value;
         isValuePresent = true;
         notifyAll();
