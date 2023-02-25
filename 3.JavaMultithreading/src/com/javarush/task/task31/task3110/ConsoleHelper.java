@@ -6,18 +6,7 @@ import java.io.InputStreamReader;
 
 public class ConsoleHelper {
 
-    private static final BufferedReader consoleReader;
-
-    static {
-        consoleReader = new BufferedReader(new InputStreamReader(System.in));
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                consoleReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
-    }
+    private static final BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void writeMessage(String message) {
         System.out.println(message);
