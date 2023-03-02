@@ -1,21 +1,33 @@
 package com.javarush.task.task31.task3110;
 
-import com.javarush.task.task31.task3110.command.ExitCommand;
+import com.javarush.task.task31.task3110.exception.WrongZipFileException;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Archiver {
 
     public static void main(String[] args) throws Exception {
-        ZipFileManager zipFileManager = new ZipFileManager(requestPath("Archive path: "));
-        zipFileManager.createZip(requestPath("File path: "));
-        new ExitCommand().execute();
+        Operation operation = null;
+        do {
+            try {
+                operation = askOperation();
+                CommandExecutor.execute(operation);
+            } catch (WrongZipFileException e) {
+                ConsoleHelper.writeMessage("Вы не выбрали файл архива или выбрали неверный файл.");
+            } catch (Exception e) {
+                ConsoleHelper.writeMessage("Произошла ошибка. Проверьте введенные данные.");
+            }
+        } while (operation != Operation.EXIT);
     }
 
-    private static Path requestPath(String msg) throws IOException {
-        System.out.printf(msg);
-        return Paths.get(ConsoleHelper.readString());
+    public static Operation askOperation() throws IOException {
+        StringBuilder menuBuilder = new StringBuilder("Выберите операцию:\n");
+
+        for (Operation value : Operation.values()) {
+            menuBuilder.append(String.format("%d - %s%n", value.ordinal(), value.description));
+        }
+
+        ConsoleHelper.writeMessage(menuBuilder.toString());
+        return Operation.values()[ConsoleHelper.readInt()];
     }
 }
