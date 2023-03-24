@@ -24,7 +24,7 @@ public class FileManager {
 
     private void collectFileList(Path path) throws IOException {
         if (Files.isRegularFile(path)) {
-            Path relative = path.relativize(rootPath);
+            Path relative = rootPath.relativize(path);
             fileList.add(relative);
         } else if (Files.isDirectory(path)) {
             try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
