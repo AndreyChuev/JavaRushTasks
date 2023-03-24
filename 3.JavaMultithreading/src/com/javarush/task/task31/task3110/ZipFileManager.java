@@ -1,11 +1,13 @@
 package com.javarush.task.task31.task3110;
 
+import com.javarush.task.task24.task2411.C;
 import com.javarush.task.task31.task3110.exception.PathIsNotFoundException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -16,6 +18,13 @@ public class ZipFileManager {
 
     public ZipFileManager(Path zipFile) {
         this.zipFile = zipFile;
+    }
+
+    public static ZipFileManager getZipFileManager() throws Exception {
+        ConsoleHelper.writeMessage("Введите полный путь к архиву:");
+        String rawArchivePath = ConsoleHelper.readString();
+        Path archivePath = Paths.get(rawArchivePath);
+        return new ZipFileManager(archivePath);
     }
 
     public void createZip(Path source) throws Exception {
