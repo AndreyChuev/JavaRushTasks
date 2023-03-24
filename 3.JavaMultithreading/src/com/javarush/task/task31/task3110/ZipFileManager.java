@@ -1,14 +1,18 @@
 package com.javarush.task.task31.task3110;
 
 import com.javarush.task.task31.task3110.exception.PathIsNotFoundException;
+import com.javarush.task.task31.task3110.exception.WrongZipFileException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipFileManager {
@@ -19,7 +23,31 @@ public class ZipFileManager {
         this.zipFile = zipFile;
     }
 
+    public List<FileProperties> getFilesList() throws Exception {
+        if (Files.isRegularFile(zipFile)) {
+            List<FileProperties> filePropertiesList = new ArrayList<>();
 
+            try (ZipInputStream zipIn = new ZipInputStream(Files.newInputStream(zipFile))) {
+                ZipEntry entry;
+                while ((entry = zipIn.getNextEntry()) != null) {
+                    copyData(zipIn, new ByteArrayOutputStream());
+
+                    FileProperties fileProperties = new FileProperties(
+                            entry.getName(),
+                            entry.getSize(),
+                            entry.getCompressedSize(),
+                            entry.getMethod()
+                    );
+
+                    filePropertiesList.add(fileProperties);
+                }
+            }
+
+            return filePropertiesList;
+        } else {
+            throw new WrongZipFileException();
+        }
+    }
 
     public void createZip(Path source) throws Exception {
         // Проверяем, существует ли директория, где будет создаваться архив
