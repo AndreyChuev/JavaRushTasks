@@ -1,6 +1,5 @@
 package com.javarush.task.task31.task3110;
 
-import com.javarush.task.task24.task2411.C;
 import com.javarush.task.task31.task3110.exception.PathIsNotFoundException;
 
 import java.io.InputStream;
@@ -20,12 +19,7 @@ public class ZipFileManager {
         this.zipFile = zipFile;
     }
 
-    public static ZipFileManager getZipFileManager() throws Exception {
-        ConsoleHelper.writeMessage("Введите полный путь к архиву:");
-        String rawArchivePath = ConsoleHelper.readString();
-        Path archivePath = Paths.get(rawArchivePath);
-        return new ZipFileManager(archivePath);
-    }
+
 
     public void createZip(Path source) throws Exception {
         // Проверяем, существует ли директория, где будет создаваться архив

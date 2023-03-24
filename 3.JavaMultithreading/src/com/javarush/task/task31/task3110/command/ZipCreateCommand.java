@@ -13,7 +13,7 @@ public class ZipCreateCommand extends ZipCommand {
     public void execute() throws Exception {
         try {
             ConsoleHelper.writeMessage("Создание архива.");
-            ZipFileManager zipFileManager = ZipFileManager.getZipFileManager();
+            ZipFileManager zipFileManager = getZipFileManager();
 
             ConsoleHelper.writeMessage("Введите полный путь файла или директории для архивации:");
             String rawFilePath = ConsoleHelper.readString();
