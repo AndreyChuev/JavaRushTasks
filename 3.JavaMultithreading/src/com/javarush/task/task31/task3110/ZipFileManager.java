@@ -19,8 +19,8 @@ public class ZipFileManager {
     }
 
     public void createZip(Path source) throws Exception {
-        if (!Files.exists(zipFile.getParent())) {
-            Files.createDirectory(zipFile.getParent());
+        if (Files.notExists(zipFile.getParent())) {
+            Files.createDirectories(zipFile.getParent());
         }
 
         ZipOutputStream zipOS = new ZipOutputStream(Files.newOutputStream(zipFile));
@@ -30,8 +30,8 @@ public class ZipFileManager {
         } else if (Files.isDirectory(source)) {
             FileManager manager = new FileManager(source);
             List<Path> fileNames = manager.getFileList();
-            for (Path path : fileNames) {
-                addNewZipEntry(zipOS, path.getParent(), path.getFileName());
+            for (Path fileName : fileNames) {
+                addNewZipEntry(zipOS, source, fileName);
             }
         } else {
             throw new PathIsNotFoundException();
