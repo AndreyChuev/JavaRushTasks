@@ -20,7 +20,7 @@ public class ZipFileManager {
 
     public void createZip(Path source) throws Exception {
         if (!Files.exists(zipFile.getParent())) {
-            Files.createDirectory(source.getParent());
+            Files.createDirectory(zipFile.getParent());
         }
 
         ZipOutputStream zipOS = new ZipOutputStream(Files.newOutputStream(zipFile));
