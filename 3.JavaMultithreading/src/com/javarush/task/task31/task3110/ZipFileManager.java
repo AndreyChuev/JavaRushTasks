@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -21,32 +20,6 @@ public class ZipFileManager {
 
     public ZipFileManager(Path zipFile) {
         this.zipFile = zipFile;
-    }
-
-    public List<FileProperties> getFilesList() throws Exception {
-        if (Files.isRegularFile(zipFile)) {
-            List<FileProperties> filePropertiesList = new ArrayList<>();
-
-            try (ZipInputStream zipIn = new ZipInputStream(Files.newInputStream(zipFile))) {
-                ZipEntry entry;
-                while ((entry = zipIn.getNextEntry()) != null) {
-                    copyData(zipIn, new ByteArrayOutputStream());
-
-                    FileProperties fileProperties = new FileProperties(
-                            entry.getName(),
-                            entry.getSize(),
-                            entry.getCompressedSize(),
-                            entry.getMethod()
-                    );
-
-                    filePropertiesList.add(fileProperties);
-                }
-            }
-
-            return filePropertiesList;
-        } else {
-            throw new WrongZipFileException();
-        }
     }
 
     public void createZip(Path source) throws Exception {
@@ -78,6 +51,32 @@ public class ZipFileManager {
                 throw new PathIsNotFoundException();
             }
         }
+    }
+
+    public List<FileProperties> getFilesList() throws Exception {
+        // Проверяем существует ли zip файл
+        if (!Files.isRegularFile(zipFile)) {
+            throw new WrongZipFileException();
+        }
+
+        List<FileProperties> files = new ArrayList<>();
+
+        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile))) {
+            ZipEntry zipEntry = zipInputStream.getNextEntry();
+
+            while (zipEntry != null) {
+                // Поля "размер" и "сжатый размер" не известны, пока элемент не будет прочитан
+                // Давайте вычитаем его в какой-то выходной поток
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                copyData(zipInputStream, baos);
+
+                FileProperties file = new FileProperties(zipEntry.getName(), zipEntry.getSize(), zipEntry.getCompressedSize(), zipEntry.getMethod());
+                files.add(file);
+                zipEntry = zipInputStream.getNextEntry();
+            }
+        }
+
+        return files;
     }
 
     private void addNewZipEntry(ZipOutputStream zipOutputStream, Path filePath, Path fileName) throws Exception {
