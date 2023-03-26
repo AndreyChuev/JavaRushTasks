@@ -10,9 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -55,6 +53,51 @@ public class ZipFileManager {
             }
         }
     }
+
+    public void addFiles(List<Path> absolutePathList) throws Exception {
+        if (!Files.isRegularFile(zipFile)) {
+            throw new WrongZipFileException();
+        }
+
+        Path tempZipFile = Files.createTempFile(null, null);
+
+        Set<Path> existingFiles = new HashSet<>();
+
+        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile));
+             ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(tempZipFile))) {
+
+            ZipEntry entry = zipInputStream.getNextEntry();
+            while (entry != null) {
+                existingFiles.add(Paths.get(entry.getName()).getFileName());
+
+                zipOutputStream.putNextEntry(new ZipEntry(entry.getName()));
+                copyData(zipInputStream, zipOutputStream);
+
+                entry = zipInputStream.getNextEntry();
+            }
+
+            for (Path path : absolutePathList) {
+                if (!Files.isRegularFile(path)) {
+                    throw new PathIsNotFoundException();
+                }
+
+                if (!existingFiles.contains(path.getFileName())) {
+                    addNewZipEntry(zipOutputStream, path.getParent(), path.getFileName());
+                } else {
+                    ConsoleHelper.writeMessage(String.format("Файл %s уже существует", path));
+                }
+            }
+        }
+
+        Files.move(tempZipFile, zipFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+
+
+    public void addFile(Path absolutePath) throws Exception {
+        addFiles(Collections.singletonList(absolutePath));
+    }
+
 
     public void extractAll(Path outputFolder) throws Exception {
         // Проверяем существует ли zip файл
