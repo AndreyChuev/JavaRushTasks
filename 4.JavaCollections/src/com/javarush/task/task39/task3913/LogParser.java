@@ -1,15 +1,9 @@
 package com.javarush.task.task39.task3913;
 
 import com.javarush.task.task39.task3913.query.IPQuery;
+import com.javarush.task.task39.task3913.query.UserQuery;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogParser implements IPQuery {
+public class LogParser implements IPQuery, UserQuery {
 
     private final List<Log> logList;
 
@@ -40,6 +34,10 @@ public class LogParser implements IPQuery {
         }
 
         return logStream;
+    }
+
+    private Set<String> filterByDatesAndMapToUserSet(Date after, Date before, Predicate<Log> logPredicate) {
+        return filterByDates(after, before).filter(logPredicate).map(Log::getUser).collect(Collectors.toSet());
     }
 
     private Set<String> getIpWithPredicate(Predicate<Log> logPredicate, Date after, Date before) {
@@ -74,6 +72,61 @@ public class LogParser implements IPQuery {
         return getIpWithPredicate(log -> log.status == status, after, before);
     }
 
+    @Override
+    public Set<String> getAllUsers() {
+        return logList.stream().map(Log::getUser).collect(Collectors.toSet());
+    }
+
+    @Override
+    public int getNumberOfUsers(Date after, Date before) {
+        return filterByDatesAndMapToUserSet(after, before, log -> true).size();
+    }
+
+    @Override
+    public int getNumberOfUserEvents(String user, Date after, Date before) {
+        return filterByDates(after, before).filter(log -> log.user.equals(user))
+                .map(Log::getEvent).collect(Collectors.toSet()).size();
+    }
+
+    @Override
+    public Set<String> getUsersForIP(String ip, Date after, Date before) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.ip.equals(ip));
+    }
+
+    @Override
+    public Set<String> getLoggedUsers(Date after, Date before) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.LOGIN);
+    }
+
+    @Override
+    public Set<String> getDownloadedPluginUsers(Date after, Date before) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.DOWNLOAD_PLUGIN);
+    }
+
+    @Override
+    public Set<String> getWroteMessageUsers(Date after, Date before) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.WRITE_MESSAGE);
+    }
+
+    @Override
+    public Set<String> getSolvedTaskUsers(Date after, Date before) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.SOLVE_TASK);
+    }
+
+    @Override
+    public Set<String> getSolvedTaskUsers(Date after, Date before, int task) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.SOLVE_TASK && log.taskNumber == task);
+    }
+
+    @Override
+    public Set<String> getDoneTaskUsers(Date after, Date before) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.DONE_TASK);
+    }
+
+    @Override
+    public Set<String> getDoneTaskUsers(Date after, Date before, int task) {
+        return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.DONE_TASK && log.taskNumber == task);
+    }
 
 
     private static class Log {
@@ -84,6 +137,30 @@ public class LogParser implements IPQuery {
         Event event;
         int taskNumber;
         Status status;
+
+        public String getIp() {
+            return ip;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public Event getEvent() {
+            return event;
+        }
+
+        public int getTaskNumber() {
+            return taskNumber;
+        }
+
+        public Status getStatus() {
+            return status;
+        }
 
         static Log of(String rawLog) {
             Log log = new Log();
