@@ -1,5 +1,6 @@
 package com.javarush.task.task39.task3913;
 
+import com.javarush.task.task39.task3913.query.DateQuery;
 import com.javarush.task.task39.task3913.query.IPQuery;
 import com.javarush.task.task39.task3913.query.UserQuery;
 
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogParser implements IPQuery, UserQuery {
+public class LogParser implements IPQuery, UserQuery, DateQuery {
 
     private final List<Log> logList;
 
@@ -44,6 +45,13 @@ public class LogParser implements IPQuery, UserQuery {
         return filterByDates(after, before)
                 .filter(logPredicate)
                 .map(log -> log.ip)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Date> getDatesWithPredicate(Predicate<Log> logPredicate, Date after, Date before) {
+        return filterByDates(after, before)
+                .filter(logPredicate)
+                .map(Log::getDate)
                 .collect(Collectors.toSet());
     }
 
@@ -126,6 +134,58 @@ public class LogParser implements IPQuery, UserQuery {
     @Override
     public Set<String> getDoneTaskUsers(Date after, Date before, int task) {
         return filterByDatesAndMapToUserSet(after, before, log -> log.event == Event.DONE_TASK && log.taskNumber == task);
+    }
+
+    @Override
+    public Set<Date> getDatesForUserAndEvent(String user, Event event, Date after, Date before) {
+        return getDatesWithPredicate(log -> log.user.equals(user) && log.event == event, after, before);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenSomethingFailed(Date after, Date before) {
+        return getDatesWithPredicate(log -> log.status == Status.FAILED, after, before);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenErrorHappened(Date after, Date before) {
+        return getDatesWithPredicate(log -> log.status == Status.ERROR, after, before);
+    }
+
+    @Override
+    public Date getDateWhenUserLoggedFirstTime(String user, Date after, Date before) {
+        return filterByDates(after, before)
+                .filter(log -> log.event == Event.LOGIN)
+                .findFirst()
+                .map(Log::getDate)
+                .orElse(null);
+    }
+
+    @Override
+    public Date getDateWhenUserSolvedTask(String user, int task, Date after, Date before) {
+        return filterByDates(after, before)
+                .filter(log -> log.user.equals(user) && log.taskNumber == task && log.event == Event.SOLVE_TASK)
+                .findFirst()
+                .map(Log::getDate)
+                .orElse(null);
+    }
+
+    @Override
+    public Date getDateWhenUserDoneTask(String user, int task, Date after, Date before) {
+        return filterByDates(after, before)
+                .filter(log -> log.user.equals(user) && log.taskNumber == task && log.event == Event.DONE_TASK)
+                .findFirst()
+                .map(Log::getDate)
+                .orElse(null);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenUserWroteMessage(String user, Date after, Date before) {
+        return getDatesWithPredicate(log -> log.user.equals(user) && log.event == Event.WRITE_MESSAGE, after, before);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenUserDownloadedPlugin(String user, Date after, Date before) {
+        return getDatesWithPredicate(log -> log.user.equals(user) && log.event == Event.DOWNLOAD_PLUGIN, after, before);
     }
 
 
