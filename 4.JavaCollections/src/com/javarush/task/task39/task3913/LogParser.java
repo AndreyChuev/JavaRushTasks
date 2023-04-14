@@ -154,9 +154,10 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
     @Override
     public Date getDateWhenUserLoggedFirstTime(String user, Date after, Date before) {
         return filterByDates(after, before)
-                .filter(log -> log.event == Event.LOGIN)
-                .findFirst()
+                .filter(log -> log.user.equals(user) && log.event == Event.LOGIN)
                 .map(Log::getDate)
+                .sorted()
+                .findFirst()
                 .orElse(null);
     }
 
@@ -164,8 +165,9 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
     public Date getDateWhenUserSolvedTask(String user, int task, Date after, Date before) {
         return filterByDates(after, before)
                 .filter(log -> log.user.equals(user) && log.taskNumber == task && log.event == Event.SOLVE_TASK)
-                .findFirst()
                 .map(Log::getDate)
+                .sorted()
+                .findFirst()
                 .orElse(null);
     }
 
@@ -173,8 +175,9 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
     public Date getDateWhenUserDoneTask(String user, int task, Date after, Date before) {
         return filterByDates(after, before)
                 .filter(log -> log.user.equals(user) && log.taskNumber == task && log.event == Event.DONE_TASK)
-                .findFirst()
                 .map(Log::getDate)
+                .sorted()
+                .findFirst()
                 .orElse(null);
     }
 
