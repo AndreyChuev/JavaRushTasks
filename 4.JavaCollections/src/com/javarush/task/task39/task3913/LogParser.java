@@ -1,6 +1,7 @@
 package com.javarush.task.task39.task3913;
 
 import com.javarush.task.task39.task3913.query.DateQuery;
+import com.javarush.task.task39.task3913.query.EventQuery;
 import com.javarush.task.task39.task3913.query.IPQuery;
 import com.javarush.task.task39.task3913.query.UserQuery;
 
@@ -12,7 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogParser implements IPQuery, UserQuery, DateQuery {
+public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery {
 
     private final List<Log> logList;
 
@@ -52,6 +53,13 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
         return filterByDates(after, before)
                 .filter(logPredicate)
                 .map(Log::getDate)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Event> getEventsWithPredicate(Predicate<Log> logPredicate, Date after, Date before) {
+        return filterByDates(after, before)
+                .filter(logPredicate)
+                .map(Log::getEvent)
                 .collect(Collectors.toSet());
     }
 
@@ -191,6 +199,60 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
         return getDatesWithPredicate(log -> log.user.equals(user) && log.event == Event.DOWNLOAD_PLUGIN, after, before);
     }
 
+    @Override
+    public int getNumberOfAllEvents(Date after, Date before) {
+        return getAllEvents(after, before).size();
+    }
+
+    @Override
+    public Set<Event> getAllEvents(Date after, Date before) {
+        return getEventsWithPredicate(log -> true, after, before);
+    }
+
+    @Override
+    public Set<Event> getEventsForIP(String ip, Date after, Date before) {
+        return getEventsWithPredicate(log -> log.ip.equals(ip), after, before);
+    }
+
+    @Override
+    public Set<Event> getEventsForUser(String user, Date after, Date before) {
+        return getEventsWithPredicate(log -> log.user.equals(user), after, before);
+    }
+
+    @Override
+    public Set<Event> getFailedEvents(Date after, Date before) {
+        return getEventsWithPredicate(log -> log.status == Status.FAILED, after, before);
+    }
+
+    @Override
+    public Set<Event> getErrorEvents(Date after, Date before) {
+        return getEventsWithPredicate(log -> log.status == Status.ERROR, after, before);
+    }
+
+    @Override
+    public int getNumberOfAttemptToSolveTask(int task, Date after, Date before) {
+        return (int) filterByDates(after, before).filter(log -> log.taskNumber == task && log.event == Event.SOLVE_TASK).count();
+    }
+
+    @Override
+    public int getNumberOfSuccessfulAttemptToSolveTask(int task, Date after, Date before) {
+        return (int) filterByDates(after, before).filter(log -> log.taskNumber == task && log.event == Event.DONE_TASK).count();
+    }
+
+    @Override
+    public Map<Integer, Integer> getAllSolvedTasksAndTheirNumber(Date after, Date before) {
+        return filterByDates(after, before)
+                .filter(log -> log.event == Event.SOLVE_TASK)
+                .collect(Collectors.toMap(Log::getTaskNumber, log -> 1, Integer::sum));
+    }
+
+    @Override
+    public Map<Integer, Integer> getAllDoneTasksAndTheirNumber(Date after, Date before) {
+        return filterByDates(after, before)
+                .filter(log -> log.event == Event.DONE_TASK)
+                .collect(Collectors.toMap(Log::getTaskNumber, log -> 1, Integer::sum));
+    }
+
 
     private static class Log {
 
@@ -254,6 +316,18 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
             }
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Log log = (Log) o;
+            return taskNumber == log.taskNumber && Objects.equals(ip, log.ip) && Objects.equals(user, log.user) && Objects.equals(date, log.date) && event == log.event && status == log.status;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(ip, user, date, event, taskNumber, status);
+        }
     }
 
 }
