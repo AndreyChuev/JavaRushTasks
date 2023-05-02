@@ -1,9 +1,9 @@
 package com.javarush.task.task39.task3913;
 
-import com.javarush.task.task39.task3913.query.DateQuery;
-import com.javarush.task.task39.task3913.query.EventQuery;
-import com.javarush.task.task39.task3913.query.IPQuery;
-import com.javarush.task.task39.task3913.query.UserQuery;
+import com.javarush.task.task39.task3913.ql.QueryActuator;
+import com.javarush.task.task39.task3913.ql.QueryParser;
+import com.javarush.task.task39.task3913.ql.QueryPart;
+import com.javarush.task.task39.task3913.query.*;
 
 import java.nio.file.Path;
 import java.text.ParseException;
@@ -13,7 +13,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery {
+public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQuery {
+
+    private static final Predicate<Log> LOG_ALL_PREDICATE = log -> true;
 
     private final List<Log> logList;
 
@@ -22,6 +24,36 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery {
         logList = dataLoader.getRawLogs().stream()
                 .map(Log::of)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<Object> execute(String query) {
+        QueryActuator actuator = new QueryActuator(QueryParser.parse(query));
+        if (actuator.isGetQuery()) {
+            return executeGet(actuator);
+        } else {
+            throw new IllegalArgumentException("QL query error! " + query);
+        }
+    }
+
+    private Set<Object> executeGet(QueryActuator actuator) {
+        Set<Object> result = new HashSet<>();
+        QueryPart queryPart = actuator.getFirstQueryPart();
+
+        if (queryPart == QueryPart.IP_QUERY) {
+            result.addAll(getUniqueIPs(null, null));
+        } else if (queryPart == QueryPart.USER_QUERY) {
+            result.addAll(getAllUsers());
+        } else if (queryPart == QueryPart.DATE_QUERY) {
+            result.addAll(getDatesWithPredicate(LOG_ALL_PREDICATE, null, null));
+        } else if (queryPart == QueryPart.EVENT_QUERY) {
+            result.addAll(getAllEvents(null, null));
+        } else if (queryPart == QueryPart.STATUS_QUERY) {
+            Set<Status> statusSet = logList.stream().map(Log::getStatus).collect(Collectors.toSet());
+            result.addAll(statusSet);
+        }
+
+        return result;
     }
 
     private Stream<Log> filterByDates(Date after, Date before) {
