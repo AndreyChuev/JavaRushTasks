@@ -12,8 +12,16 @@ public class LexemeBuffer {
         this.lexemes = Collections.unmodifiableList(lexemes);
     }
 
+    public boolean hasNext() {
+        return pos < lexemes.size();
+    }
+
     public Lexeme next() {
         return lexemes.get(pos++);
+    }
+
+    public Lexeme lookingAhead() {
+        return lexemes.get(pos + 1);
     }
 
     public void back() {

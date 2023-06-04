@@ -7,7 +7,7 @@ public class LexemeParser {
 
     private static final String REGEX = "\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
-    public static LexemeBuffer parseQuery(String query) {
+    public static List<Lexeme> parseQuery(String query) {
         String[] queryParts = query.split(REGEX);
         List<Lexeme> lexemes = new ArrayList<>();
 
@@ -52,9 +52,7 @@ public class LexemeParser {
             }
         }
 
-
-
-        return new LexemeBuffer(lexemes);
+        return lexemes;
     }
 
     private static String removeQuotes(String str) {
