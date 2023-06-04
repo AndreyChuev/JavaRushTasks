@@ -63,12 +63,14 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                 break;
             case IP:
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
-                    chainAndPredicate.addPredicate(log -> log.ip().equals(buffer.next().value()));
+                    String ip = buffer.next().value();
+                    chainAndPredicate.addPredicate(log -> log.ip().equals(ip));
                 }
                 break;
             case USER:
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
-                    chainAndPredicate.addPredicate(log -> log.user().equals(buffer.next().value()));
+                    String user = buffer.next().value();
+                    chainAndPredicate.addPredicate(log -> log.user().equals(user));
                 }
                 break;
             case DATE:
@@ -84,12 +86,14 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                 break;
             case EVENT:
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
-                    chainAndPredicate.addPredicate(log -> log.event() == Event.valueOf(buffer.next().value()));
+                    Event event = Event.valueOf(buffer.next().value());
+                    chainAndPredicate.addPredicate(log -> log.event() == event);
                 }
                 break;
             case STATUS:
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
-                    chainAndPredicate.addPredicate(log -> log.status() == Status.valueOf(buffer.next().value()));
+                    Status status = Status.valueOf(buffer.next().value());
+                    chainAndPredicate.addPredicate(log -> log.status() == status);
                 }
                 break;
         }

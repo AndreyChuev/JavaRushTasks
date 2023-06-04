@@ -12,7 +12,7 @@ public class Solution {
     public static void main(String[] args) {
         LogParser logParser = new LogParser(Paths.get("D:\\IDEA_project\\JavaRushTasks\\4.JavaCollections\\src\\com\\javarush\\task\\task39\\task3913\\logs"));
 //        System.out.println(logParser.getNumberOfUniqueIPs(null, new Date()));
-        System.out.println(logParser.execute("get event for date = \"03.01.2014 03:45:23\""));
+        System.out.println(logParser.execute("get ip for user = \"Eduard Petrovich Morozko\""));
 
 //        String inputString = "get event for date = \"03.01.2014 03:45:23\"";
 //        LexemeBuffer buffer = new LexemeBuffer(LexemeParser.parseQuery(inputString));
