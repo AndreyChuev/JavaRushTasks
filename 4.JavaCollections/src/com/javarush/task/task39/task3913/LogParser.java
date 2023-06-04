@@ -70,6 +70,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
                     chainAndPredicate.addPredicate(log -> log.user().equals(buffer.next().value()));
                 }
+                break;
             case DATE:
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
@@ -80,14 +81,17 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                         throw new IllegalArgumentException(e);
                     }
                 }
+                break;
             case EVENT:
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
                     chainAndPredicate.addPredicate(log -> log.event() == Event.valueOf(buffer.next().value()));
                 }
+                break;
             case STATUS:
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
                     chainAndPredicate.addPredicate(log -> log.status() == Status.valueOf(buffer.next().value()));
                 }
+                break;
         }
     }
 
