@@ -12,8 +12,8 @@ public class LexemeParser {
     private static final String REGEX = "\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     private static final Predicate<String> IP_PREDICATE = s -> s.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
-    private static final Predicate<String> DATE_PREDICATE = s -> s.matches("\\d{2}\\.\\d{2}\\.\\d{4} \\d{1,2}:\\d{2}:\\d{2}");
-    private static final Predicate<String> USER_PREDICATE = s -> s.matches("^[A-Za-z]+\\s[A-Za-z]+(?:\\s[A-Za-z]+)?$");
+    private static final Predicate<String> DATE_PREDICATE = s -> s.matches("\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}");
+    private static final Predicate<String> USER_PREDICATE = s -> s.matches("[A-Z a-z]+");
     private static final Predicate<String> EVENT_PREDICATE = s -> {
         try {
             Event.valueOf(s);
