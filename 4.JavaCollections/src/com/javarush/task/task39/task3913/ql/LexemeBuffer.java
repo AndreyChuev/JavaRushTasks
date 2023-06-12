@@ -21,7 +21,10 @@ public class LexemeBuffer {
     }
 
     public Lexeme lookingAhead() {
-        return lexemes.get(pos + 1);
+        if (hasNext()) {
+            return lexemes.get(pos + 1);
+        }
+        return null;
     }
 
     public void back() {

@@ -59,6 +59,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
         Lexeme command = buffer.next();
         switch (command.lexemeType()) {
             case FOR_COMMAND:
+            case AND:
                 expr(chainAndPredicate, buffer);
                 break;
             case IP:
@@ -74,11 +75,19 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                 }
                 break;
             case DATE:
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                 if (buffer.next().lexemeType() == LexemeType.EQUAL) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                     try {
                         Date date = dateFormat.parse(buffer.next().value());
-                        chainAndPredicate.addPredicate(log -> log.date().equals(date));
+                        if (buffer.hasNext() && buffer.lookingAhead().lexemeType() == LexemeType.BETWEEN) {
+                            buffer.next();
+                            Date after = dateFormat.parse(buffer.next().value());
+                            buffer.next();
+                            Date before = dateFormat.parse(buffer.next().value());
+                            chainAndPredicate.addPredicate(log -> log.date().after(after) && log.date().before(before));
+                        } else {
+                            chainAndPredicate.addPredicate(log -> log.date().equals(date));
+                        }
                     } catch (ParseException e) {
                         throw new IllegalArgumentException(e);
                     }
