@@ -1,7 +1,9 @@
 package com.javarush.task.task39.task3913.ql;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class LexemeBuffer {
 
@@ -17,7 +19,15 @@ public class LexemeBuffer {
     }
 
     public Lexeme next() {
-        return lexemes.get(pos++);
+        try {
+            return lexemes.get(pos++);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public Lexeme next(int offset) {
+        return lexemes.get(pos + offset);
     }
 
     public Lexeme lookingAhead() {

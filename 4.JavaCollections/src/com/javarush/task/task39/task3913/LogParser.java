@@ -55,10 +55,60 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
         return logStream.map(resultFunc).collect(Collectors.toSet());
     }
 
+//    private void expr(ChainAndPredicate chainAndPredicate, LexemeBuffer buffer) {
+//        while (buffer.hasNext()) {
+//            Lexeme command = buffer.next();
+//            switch (command.lexemeType()) {
+//                case IP:
+//                    if (buffer.next().lexemeType() == LexemeType.EQUAL) {
+//                        String ip = buffer.next().value();
+//                        chainAndPredicate.addPredicate(log -> log.ip().equals(ip));
+//                    }
+//                    break;
+//                case USER:
+//                    if (buffer.next().lexemeType() == LexemeType.EQUAL) {
+//                        String user = buffer.next().value();
+//                        chainAndPredicate.addPredicate(log -> log.user().equals(user));
+//                    }
+//                    break;
+//                case DATE:
+//                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+//                    if (buffer.next().lexemeType() == LexemeType.EQUAL) {
+//                        try {
+//                            Date date = dateFormat.parse(buffer.next().value());
+//                            if (buffer.hasNext() && buffer.lookingAhead().lexemeType() == LexemeType.BETWEEN) {
+//                                buffer.next();
+//                                Date after = dateFormat.parse(buffer.next().value());
+//                                buffer.next();
+//                                Date before = dateFormat.parse(buffer.next().value());
+//                                chainAndPredicate.addPredicate(log -> log.date().after(after) && log.date().before(before));
+//                            } else {
+//                                chainAndPredicate.addPredicate(log -> log.date().equals(date));
+//                            }
+//                        } catch (ParseException e) {
+//                            throw new IllegalArgumentException(e);
+//                        }
+//                    }
+//                    break;
+//                case EVENT:
+//                    if (buffer.next().lexemeType() == LexemeType.EQUAL) {
+//                        Event event = Event.valueOf(buffer.next().value());
+//                        chainAndPredicate.addPredicate(log -> log.event() == event);
+//                    }
+//                    break;
+//                case STATUS:
+//                    if (buffer.next().lexemeType() == LexemeType.EQUAL) {
+//                        Status status = Status.valueOf(buffer.next().value());
+//                        chainAndPredicate.addPredicate(log -> log.status() == status);
+//                    }
+//                    break;
+//            }
+//        }
+//    }
+
     private void expr(ChainAndPredicate chainAndPredicate, LexemeBuffer buffer) {
-        while (buffer.hasNext()) {
-            Lexeme command = buffer.next();
-            switch (command.lexemeType()) {
+        for (Lexeme lexeme = buffer.next(); buffer.hasNext(); lexeme = buffer.next()) {
+            switch (lexeme.lexemeType()) {
                 case IP:
                     if (buffer.next().lexemeType() == LexemeType.EQUAL) {
                         String ip = buffer.next().value();
@@ -72,22 +122,20 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                     }
                     break;
                 case DATE:
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-                    if (buffer.next().lexemeType() == LexemeType.EQUAL) {
-                        try {
-                            Date date = dateFormat.parse(buffer.next().value());
-                            if (buffer.hasNext() && buffer.lookingAhead().lexemeType() == LexemeType.BETWEEN) {
-                                buffer.next();
-                                Date after = dateFormat.parse(buffer.next().value());
-                                buffer.next();
-                                Date before = dateFormat.parse(buffer.next().value());
-                                chainAndPredicate.addPredicate(log -> log.date().after(after) && log.date().before(before));
-                            } else {
-                                chainAndPredicate.addPredicate(log -> log.date().equals(date));
-                            }
-                        } catch (ParseException e) {
-                            throw new IllegalArgumentException(e);
+                    try {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                        Lexeme next = buffer.next();
+                        if (next.lexemeType() == LexemeType.EQUAL) {
+                            Date after = dateFormat.parse(buffer.next().value());
+                            chainAndPredicate.addPredicate(log -> log.date().equals(after));
+                        } else if (next.lexemeType() == LexemeType.BETWEEN) {
+                            Date after = dateFormat.parse(buffer.next().value());
+                            buffer.next();
+                            Date before = dateFormat.parse(buffer.next().value());
+                            chainAndPredicate.addPredicate(log -> log.date().after(after) && log.date().before(before));
                         }
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
                     }
                     break;
                 case EVENT:
